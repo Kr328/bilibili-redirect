@@ -32,8 +32,8 @@
             transform: translate(-50%, -50%);
             
             background: white;
-            border-radius: 5px;
-            box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.35);
             
             padding: 10px;
             display: flex;
