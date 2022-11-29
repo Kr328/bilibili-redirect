@@ -2,12 +2,12 @@ package main
 
 import (
 	"bytes"
-	_ "embed"
 	"encoding/json"
 	"flag"
 	"io/fs"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -24,9 +24,6 @@ var (
 	listenAt  = flag.String("l", "localhost:10808", "Local server listen address")
 	servePath = flag.String("p", ".", "Local server root path")
 )
-
-//go:embed userscript.js
-var userscript []byte
 
 func main() {
 	flag.Parse()
@@ -100,7 +97,12 @@ func main() {
 		_, _ = writer.Write(bytes.ReplaceAll(userscript, []byte("%%%SERVER_URL%%%"), []byte("http://"+*listenAt)))
 	})
 	r.HandleFunc("/{fileName}", func(writer http.ResponseWriter, request *http.Request) {
-		fileName := chi.URLParam(request, "fileName")
+		fileName, err := url.QueryUnescape(chi.URLParam(request, "fileName"))
+		if err != nil {
+			writer.WriteHeader(http.StatusBadRequest)
+
+			return
+		}
 
 		if strings.Contains(fileName, "/") {
 			writer.WriteHeader(http.StatusBadRequest)
