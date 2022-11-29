@@ -6,8 +6,11 @@
 
 1. 运行服务端
     * 直接运行 `bilibili-redirect` 二进制文件
+    
         将 `bilibili-redirect(.exe)` 复制至媒体存储目录直接运行。
-    * 使用命令行运行
+        
+    * 使用命令行运行  
+    
         ```text
         Usage of bilibili-redirect.exe:
            -l string
@@ -16,14 +19,16 @@
                Local server root path (default ".")
         ```
 
-2. 安装 userscript (需要 Tampermonkey 等浏览器插件)
+2. 安装 userscript (需要 Tampermonkey 等浏览器插件)  
+
     访问程序输出的脚本地址
     ```text
     Serve '/path/to/media/store' at http://localhost:10808
     Script at http://localhost:10808/bilibili-redirect.user.js  <== this link
     ```
 
-3. 使用播放器内的 `使用本地源` 按钮
+3. 使用播放器内的 `使用本地源` 按钮  
+
     ![use-local-resource](./imgs/use-local-resource.png)
 
 ### 构建
