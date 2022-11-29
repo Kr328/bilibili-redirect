@@ -13,8 +13,10 @@
 //
 // @version         1.0
 // ==/UserScript==
+
 (() => {
-    const defaultServerURL = "%%%SERVER_URL%%%";
+    const defaultServerURL: string = "%%%SERVER_URL%%%";
+
     // language=CSS
     GM_addStyle(`
         .bilibili-redirect-base {
@@ -96,6 +98,7 @@
             word-break: break-word;
         }
     `);
+
     function injectPopupWindow() {
         // language=HTML
         const toInject = `
@@ -116,31 +119,42 @@
                 <div id="bilibili-redirect-file-list" class="--br-scrollable-column" />
             </div>
         `;
-        const wrap = document.createElement("div");
-        wrap.classList.add("bilibili-redirect-base");
+
+        const wrap = document.createElement("div")
+        wrap.classList.add("bilibili-redirect-base")
         wrap.innerHTML = toInject;
         document.body.appendChild(wrap);
+
         setTimeout(() => {
-            const root = document.querySelector("#bilibili-redirect-root");
-            const close = document.querySelector("#bilibili-redirect-close");
+            const root = document.querySelector<HTMLDivElement>("#bilibili-redirect-root")
+
+            const close = document.querySelector<HTMLSpanElement>("#bilibili-redirect-close")
             close.onclick = () => {
                 root.classList.add("--br-hidden");
             };
-            const url = document.querySelector("#bilibili-redirect-url");
+
+            const url = document.querySelector<HTMLInputElement>("#bilibili-redirect-url");
             url.value = defaultServerURL;
-            const fileList = document.querySelector("#bilibili-redirect-file-list");
+
+            const fileList = document.querySelector<HTMLDivElement>("#bilibili-redirect-file-list");
+
             let refreshing = false;
             let destroyed = false;
-            const refresh = document.querySelector("#bilibili-redirect-refresh");
+
+            const refresh = document.querySelector<HTMLButtonElement>("#bilibili-redirect-refresh");
             refresh.onclick = () => {
                 if (!refreshing) {
                     refreshing = true;
+
                     const baseUrl = url.value;
+
                     (async () => {
                         fileList.innerHTML = "<storage>获取列表中...</storage>";
+
                         try {
                             const resp = await fetch(baseUrl);
-                            const files = JSON.parse(await resp.text());
+                            const files = JSON.parse(await resp.text()) as ResponseFileList;
+
                             if (files.files.length != 0) {
                                 for (let file of files.files) {
                                     const span = document.createElement("span");
@@ -149,27 +163,30 @@
                                     span.onclick = () => {
                                         const video = document.querySelector("video");
                                         const player = unsafeWindow.player;
+
                                         if (!destroyed) {
                                             destroyed = true;
+
                                             player.core().destroy();
                                         }
+
                                         player.core().seek = async (t) => {
                                             video.currentTime = t;
-                                        };
+                                        }
+
                                         video.src = baseUrl + "/" + encodeURIComponent(file.name);
+
                                         root.classList.add("--br-hidden");
                                     };
+
                                     fileList.appendChild(span);
                                 }
-                            }
-                            else {
+                            } else {
                                 fileList.innerHTML = "<storage>.mp4 不存在</storage>";
                             }
-                        }
-                        catch (e) {
+                        } catch (e) {
                             fileList.innerHTML = "<storage>无法获取文件列表: " + e + "</storage>";
-                        }
-                        finally {
+                        } finally {
                             refreshing = false;
                         }
                     })();
@@ -177,53 +194,69 @@
             };
         });
     }
+
     function resizeLegacyPanel() {
-        const controlBox = document.querySelector(".bpx-player-ctrl-setting-box");
+        const controlBox = document.querySelector<HTMLDivElement>(".bpx-player-ctrl-setting-box")
         if (controlBox == null) {
             return;
         }
-        const panel = controlBox.querySelector(".bui-panel-wrap");
+
+        const panel = controlBox.querySelector<HTMLDivElement>(".bui-panel-wrap");
         if (panel == null) {
             return;
         }
+
         panel.style.height = "170px";
-        panel.querySelectorAll(".bui-panel-item").forEach((elm) => {
+        panel.querySelectorAll<HTMLDivElement>(".bui-panel-item").forEach((elm) => {
             elm.style.height = "100%";
         });
     }
-    function appendOption(containerSelector, cloneSelector) {
-        const container = document.querySelector(containerSelector);
+
+    function appendOption(containerSelector: string, cloneSelector: string): boolean {
+        const container = document.querySelector<HTMLDivElement>(containerSelector)
         if (container == null) {
             return false;
         }
-        const clone = document.querySelector(cloneSelector);
+
+        const clone = document.querySelector<HTMLDivElement>(cloneSelector)
         if (clone == null) {
-            console.error("src style not found.");
+            console.error("src style not found.")
+
             return true;
         }
-        const cloned = clone.cloneNode(true);
-        cloned.querySelector("span").innerText = "使用本地源";
+
+        const cloned: HTMLDivElement = clone.cloneNode(true) as HTMLDivElement;
+
+        cloned.querySelector<HTMLSpanElement>("span").innerText = "使用本地源";
         cloned.onclick = () => {
-            document.querySelector("#bilibili-redirect-root")
+            document.querySelector<HTMLDivElement>("#bilibili-redirect-root")
                 .classList.remove("--br-hidden");
-            document.querySelector("#bilibili-redirect-refresh")
-                .dispatchEvent(new Event("click"));
-        };
+            document.querySelector<HTMLSpanElement>("#bilibili-redirect-refresh")
+                .dispatchEvent(new Event("click"))
+        }
+
         container.appendChild(cloned);
+
         return true;
     }
+
     function poll() {
         const appended = appendOption(".squirtle-setting-panel-wrap", ".squirtle-single-select.squirtle-setting-more")
             || appendOption(".bpx-player-ctrl-setting-menu-left", ".bpx-player-ctrl-setting-more");
+
         if (!appended) {
-            setTimeout(poll, 1000);
+            setTimeout(poll, 1000)
+
             return;
         }
+
         resizeLegacyPanel();
     }
+
     window.addEventListener("load", () => {
         setTimeout(() => {
             injectPopupWindow();
+
             poll();
         });
     });
