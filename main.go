@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	_ "embed"
-	"encoding/base64"
 	"encoding/json"
 	"flag"
 	"io/fs"
@@ -50,7 +49,9 @@ func main() {
 		}
 
 		files = lo.Filter(files, func(item os.DirEntry, _ int) bool {
-			return !item.IsDir() && (strings.HasSuffix(item.Name(), ".mp4") || strings.HasSuffix(item.Name(), ".flv"))
+			ext := filepath.Ext(item.Name())
+
+			return !item.IsDir() && (ext == ".mp4")
 		})
 
 		slices.SortFunc(files, func(a, b fs.DirEntry) bool {
@@ -76,7 +77,6 @@ func main() {
 		})
 
 		type File struct {
-			ID   string `json:"id"`
 			Name string `json:"name"`
 		}
 
@@ -87,7 +87,6 @@ func main() {
 		resp := &Files{
 			Files: lo.Map(files, func(item os.DirEntry, index int) *File {
 				return &File{
-					ID:   base64.URLEncoding.EncodeToString([]byte(item.Name())),
 					Name: item.Name(),
 				}
 			}),
@@ -100,17 +99,8 @@ func main() {
 		writer.WriteHeader(http.StatusOK)
 		_, _ = writer.Write(bytes.ReplaceAll(userscript, []byte("%%%SERVER_URL%%%"), []byte("http://"+*listenAt)))
 	})
-	r.HandleFunc("/{fileId}", func(writer http.ResponseWriter, request *http.Request) {
-		fileId, err := base64.URLEncoding.DecodeString(chi.URLParam(request, "fileId"))
-		if err != nil {
-			writer.WriteHeader(http.StatusBadRequest)
-
-			_, _ = writer.Write([]byte(err.Error()))
-
-			return
-		}
-
-		fileName := string(fileId)
+	r.HandleFunc("/{fileName}", func(writer http.ResponseWriter, request *http.Request) {
+		fileName := chi.URLParam(request, "fileName")
 
 		if strings.Contains(fileName, "/") {
 			writer.WriteHeader(http.StatusBadRequest)

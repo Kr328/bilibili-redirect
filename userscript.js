@@ -127,7 +127,8 @@
         document.body.appendChild(dialog);
 
         setTimeout(() => {
-            let refreshing = false
+            let refreshing = false;
+            let destroyed = false;
 
             const close = document.querySelector("#bilibili-redirect-close")
             close.addEventListener("click", () => {
@@ -174,7 +175,20 @@
                                 elm.classList.add("item")
                                 elm.classList.add("clickable")
                                 elm.addEventListener("click", () => {
-                                    document.querySelector("video").src = baseUrl + "/" + file.id;
+                                    const video = document.querySelector("video");
+                                    const player = unsafeWindow.player;
+
+                                    if (!destroyed) {
+                                        destroyed = true;
+
+                                        player.core().destroy();
+                                    }
+
+                                    player.core().seek = async function (t) {
+                                        video.currentTime = t
+                                    }
+
+                                    video.src = baseUrl + "/" + encodeURIComponent(file.name);
 
                                     dialog.classList.add("bilibili-redirect-popup-hidden")
                                 })
