@@ -118,11 +118,10 @@ else
 endif
 
 $(gz_releases): %.gz : %
-	chmod +x $(BINDIR)/$(NAME)-$(basename $@)
-	gzip -f -S -$(PACKVERSION).gz $(BINDIR)/$(NAME)-$(basename $@)
+	gzip -f -S .gz $(BINDIR)/$(NAME)-$(basename $@)
 
 $(zip_releases): %.zip : %
-	zip -m -j $(BINDIR)/$(NAME)-$(basename $@)-$(PACKVERSION).zip $(BINDIR)/$(NAME)-$(basename $@).exe
+	zip -m -j $(BINDIR)/$(NAME)-$(basename $@).zip $(BINDIR)/$(NAME)-$(basename $@).exe
 
 all-arch: $(PLATFORM_LIST) $(WINDOWS_ARCH_LIST)
 
