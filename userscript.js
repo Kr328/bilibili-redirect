@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name          	Bilibili Redirect
+// @name            Bilibili Redirect
 // @description     Redirect bilibili video src to local file
 // @icon            https://www.bilibili.com/favicon.ico
 //
-// @author			Kr328
+// @author          Kr328
 // @namespace       http://github.com/Kr328/bilibili-redirect
 //
 // @match           https://www.bilibili.com/bangumi/play/*
