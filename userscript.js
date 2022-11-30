@@ -11,7 +11,7 @@
 //
 // @grant           GM_addStyle
 //
-// @version         1.0
+// @version         builtin
 // ==/UserScript==
 (() => {
     const defaultServerURL = "%%%SERVER_URL%%%";
@@ -141,8 +141,9 @@
                         try {
                             const resp = await fetch(baseUrl);
                             const files = JSON.parse(await resp.text());
-                            if (files.files.length != 0) {
-                                for (let file of files.files) {
+                            if (files.files.length !== 0) {
+                                fileList.innerHTML = "";
+                                for (const file of files.files) {
                                     const span = document.createElement("span");
                                     span.innerText = file.name;
                                     span.classList.add("--br-file-item", "--br-clickable");
