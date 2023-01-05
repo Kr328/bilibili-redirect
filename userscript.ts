@@ -11,12 +11,10 @@
 //
 // @grant           GM_addStyle
 //
-// @version         builtin
+// @version         1.0.0
 // ==/UserScript==
 
 (() => {
-    const defaultServerURL: string = "%%%SERVER_URL%%%";
-
     // language=CSS
     GM_addStyle(`
         .bilibili-redirect-base {
@@ -69,14 +67,9 @@
             padding-bottom: 5px;
         }
 
-        .bilibili-redirect-base .--br-scrollable-column {
-            flex-direction: column;
-            overflow: scroll;
-        }
-
         .bilibili-redirect-base .--br-popup-window {
             width: 400px;
-            height: 80vh;
+            height: 100px;
             z-index: 100000;
             position: fixed;
             left: 50%;
@@ -88,14 +81,9 @@
             padding: 10px;
         }
 
-        .bilibili-redirect-base .--br-file-item {
-            display: block;
-            padding: 10px;
-            margin: 0 0 5px 0;
-            border: 1px solid #00000065;
-            border-radius: 5px;
-            font-size: 14px;
-            word-break: break-word;
+        .bilibili-redirect-base .--br-input-container {
+            flex: 1;
+            justify-content: center;
         }
     `);
 
@@ -111,87 +99,48 @@
                         </svg>
                     </span>
                 </div>
-                <div class="--br-spacing-row">
-                    <span style="font-size: 14px">服务端地址</span>
-                    <input style="flex: 1" id="bilibili-redirect-url" type="text"/>
-                    <button id="bilibili-redirect-refresh" class="--br-clickable">刷新</button>
+                <div class="--br-input-container">
+                    <input id="bilibili-redirect-file-picker" type="file" accept="video/mp4" />
                 </div>
-                <div id="bilibili-redirect-file-list" class="--br-scrollable-column" />
             </div>
         `;
 
-        const wrap = document.createElement("div")
-        wrap.classList.add("bilibili-redirect-base")
+        const wrap = document.createElement("div");
+
+        wrap.classList.add("bilibili-redirect-base");
         wrap.innerHTML = toInject;
+
         document.body.appendChild(wrap);
 
         setTimeout(() => {
-            const root = document.querySelector<HTMLDivElement>("#bilibili-redirect-root")
+            const root = document.querySelector<HTMLDivElement>("#bilibili-redirect-root");
 
-            const close = document.querySelector<HTMLSpanElement>("#bilibili-redirect-close")
+            const close = document.querySelector<HTMLSpanElement>("#bilibili-redirect-close");
             close.onclick = () => {
                 root.classList.add("--br-hidden");
             };
 
-            const url = document.querySelector<HTMLInputElement>("#bilibili-redirect-url");
-            url.value = defaultServerURL;
-
-            const fileList = document.querySelector<HTMLDivElement>("#bilibili-redirect-file-list");
-
-            let refreshing = false;
             let destroyed = false;
 
-            const refresh = document.querySelector<HTMLButtonElement>("#bilibili-redirect-refresh");
-            refresh.onclick = () => {
-                if (!refreshing) {
-                    refreshing = true;
+            const picker = document.querySelector<HTMLInputElement>("#bilibili-redirect-file-picker");
+            picker.onchange = () => {
+                if (picker.files) {
+                    const video = document.querySelector("video");
+                    const player = unsafeWindow.player;
 
-                    const baseUrl = url.value;
+                    if (!destroyed) {
+                        destroyed = true;
 
-                    (async () => {
-                        fileList.innerHTML = "<storage>获取列表中...</storage>";
+                        player.core().destroy();
+                    }
 
-                        try {
-                            const resp = await fetch(baseUrl);
-                            const files = JSON.parse(await resp.text()) as ResponseFileList;
+                    player.core().seek = async (t) => {
+                        video.currentTime = t;
+                    }
 
-                            if (files.files.length !== 0) {
-                                fileList.innerHTML = "";
+                    video.src = URL.createObjectURL(picker.files[0]);
 
-                                for (const file of files.files) {
-                                    const span = document.createElement("span");
-                                    span.innerText = file.name;
-                                    span.classList.add("--br-file-item", "--br-clickable");
-                                    span.onclick = () => {
-                                        const video = document.querySelector("video");
-                                        const player = unsafeWindow.player;
-
-                                        if (!destroyed) {
-                                            destroyed = true;
-
-                                            player.core().destroy();
-                                        }
-
-                                        player.core().seek = async (t) => {
-                                            video.currentTime = t;
-                                        }
-
-                                        video.src = baseUrl + "/" + encodeURIComponent(file.name);
-
-                                        root.classList.add("--br-hidden");
-                                    };
-
-                                    fileList.appendChild(span);
-                                }
-                            } else {
-                                fileList.innerHTML = "<storage>.mp4 不存在</storage>";
-                            }
-                        } catch (e) {
-                            fileList.innerHTML = "<storage>无法获取文件列表: " + e + "</storage>";
-                        } finally {
-                            refreshing = false;
-                        }
-                    })();
+                    root.classList.add("--br-hidden");
                 }
             };
         });
@@ -233,8 +182,8 @@
         cloned.onclick = () => {
             document.querySelector<HTMLDivElement>("#bilibili-redirect-root")
                 .classList.remove("--br-hidden");
-            document.querySelector<HTMLSpanElement>("#bilibili-redirect-refresh")
-                .dispatchEvent(new Event("click"))
+            document.querySelector<HTMLInputElement>("#bilibili-redirect-file-picker")
+                .value = "";
         }
 
         container.appendChild(cloned);

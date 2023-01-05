@@ -1,10 +1,10 @@
 declare global {
-    function GM_addStyle(style: string)
+    function GM_addStyle(style: string): undefined
 
     let unsafeWindow: GlobalWindow;
 
     interface PlayerCore {
-        destroy()
+        destroy(): undefined
 
         seek: (time: number) => Promise<void>
     }
