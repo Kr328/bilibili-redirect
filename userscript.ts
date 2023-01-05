@@ -11,7 +11,7 @@
 //
 // @grant           GM_addStyle
 //
-// @version         1.0.0
+// @version         1.3
 // ==/UserScript==
 
 (() => {
@@ -100,7 +100,7 @@
                     </span>
                 </div>
                 <div class="--br-input-container">
-                    <input id="bilibili-redirect-file-picker" type="file" accept="video/mp4" />
+                <input id="bilibili-redirect-file-picker" type="file" accept="video/mp4" />
                 </div>
             </div>
         `;
