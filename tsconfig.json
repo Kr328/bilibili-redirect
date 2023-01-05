@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "typeRoots": ["types"],
-    "target": "ES2018"
-  }
+    "target": "ES2018",
+    "outFile": "bilibili-redirect.user.js"
+  }  
 }
