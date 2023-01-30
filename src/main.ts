@@ -1,5 +1,5 @@
-import './style.less'
-import closeSvg from './close.svg'
+import './style.less';
+import closeSvg from './close.svg';
 import {unsafeWindow} from "vite-plugin-monkey/dist/client";
 
 (() => {
@@ -13,27 +13,33 @@ import {unsafeWindow} from "vite-plugin-monkey/dist/client";
                 <input id="bilibili-redirect-file-picker" type="file" accept="video/mp4" />
             </div>
         </div>
-    `
+    `;
 
     class Injector {
-        private injected: boolean = false
+        private injected: boolean = false;
+        private destroyed: boolean = false;
 
         public inject(): boolean {
             if (this.injected) {
-                return true
+                return true;
             }
 
-            let added = this.addOption(".squirtle-setting-panel-wrap", ".squirtle-single-select.squirtle-setting-more")
-                || this.addOption(".bpx-player-ctrl-setting-menu-left", ".bpx-player-ctrl-setting-more");
+            let added = this.addOption(
+                ".squirtle-setting-panel-wrap",
+                ".squirtle-single-select.squirtle-setting-more",
+            ) || this.addOption(
+                ".bpx-player-ctrl-setting-menu-left",
+                ".bpx-player-ctrl-setting-more",
+            );
 
             if (added) {
-                this.injected = true
+                this.injected = true;
 
                 this.injectPopupWindow();
                 this.resizeLegacyPanel();
             }
 
-            return added
+            return added;
         }
 
         private injectPopupWindow() {
@@ -45,24 +51,22 @@ import {unsafeWindow} from "vite-plugin-monkey/dist/client";
             document.body.appendChild(wrap);
 
             setTimeout(() => {
-                const root = document.querySelector<HTMLDivElement>("#bilibili-redirect-root")!!;
+                const root = wrap.querySelector<HTMLDivElement>("#bilibili-redirect-root")!;
 
-                const close = document.querySelector<HTMLSpanElement>("#bilibili-redirect-close")!!;
+                const close = wrap.querySelector<HTMLSpanElement>("#bilibili-redirect-close")!;
                 close.onclick = () => {
                     root.classList.add("--br-hidden");
                 };
 
-                let destroyed = false;
-
-                const picker = document.querySelector<HTMLInputElement>("#bilibili-redirect-file-picker")!!;
+                const picker = wrap.querySelector<HTMLInputElement>("#bilibili-redirect-file-picker")!;
                 picker.onchange = () => {
                     if (picker.files) {
                         const video = document.querySelector("video");
                         if (video) {
                             const player = unsafeWindow.player;
 
-                            if (!destroyed) {
-                                destroyed = true;
+                            if (!this.destroyed) {
+                                this.destroyed = true;
 
                                 player.core().destroy();
                             }
@@ -73,7 +77,7 @@ import {unsafeWindow} from "vite-plugin-monkey/dist/client";
                                 } catch (e) {
                                     console.warn(e)
                                 }
-                            }
+                            };
 
                             video.src = URL.createObjectURL(picker.files[0]);
 
@@ -85,7 +89,7 @@ import {unsafeWindow} from "vite-plugin-monkey/dist/client";
         }
 
         private resizeLegacyPanel() {
-            const controlBox = document.querySelector<HTMLDivElement>(".bpx-player-ctrl-setting-box")
+            const controlBox = document.querySelector<HTMLDivElement>(".bpx-player-ctrl-setting-box");
             if (controlBox == null) {
                 return;
             }
@@ -96,33 +100,33 @@ import {unsafeWindow} from "vite-plugin-monkey/dist/client";
             }
 
             panel.style.height = "170px";
-            panel.querySelectorAll<HTMLDivElement>(".bui-panel-item").forEach((elm) => {
+            panel.querySelectorAll<HTMLDivElement>("div.bui-panel-item").forEach((elm) => {
                 elm.style.height = "100%";
             });
         }
 
         private addOption(containerSelector: string, cloneSelector: string): boolean {
-            const container = document.querySelector<HTMLDivElement>(containerSelector)
+            const container = document.querySelector<HTMLDivElement>(containerSelector);
             if (container == null) {
                 return false;
             }
 
-            const clone = document.querySelector<HTMLDivElement>(cloneSelector)
+            const clone = document.querySelector<HTMLDivElement>(cloneSelector);
             if (clone == null) {
-                console.error("src style not found.")
+                console.error("src style not found.");
 
                 return true;
             }
 
             const cloned: HTMLDivElement = clone.cloneNode(true) as HTMLDivElement;
 
-            cloned.querySelector<HTMLSpanElement>("span")!!.innerText = "使用本地源";
+            cloned.querySelector<HTMLSpanElement>("span")!.innerText = "使用本地源";
             cloned.onclick = () => {
-                document.querySelector<HTMLDivElement>("#bilibili-redirect-root")!!
+                document.querySelector<HTMLDivElement>("#bilibili-redirect-root")!
                     .classList.remove("--br-hidden");
                 document.querySelector<HTMLInputElement>("#bilibili-redirect-file-picker")!
                     .value = "";
-            }
+            };
 
             container.appendChild(cloned);
 
@@ -131,8 +135,10 @@ import {unsafeWindow} from "vite-plugin-monkey/dist/client";
     }
 
     const injector = new Injector();
+
+    let retry = 0;
     const poller = setInterval(() => {
-        if (injector.inject()) {
+        if (injector.inject() || (retry++ > 20)) {
             clearInterval(poller);
         }
     }, 500);
