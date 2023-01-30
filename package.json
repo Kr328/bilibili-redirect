@@ -1,0 +1,17 @@
+{
+  "name": "bilibili-redirect",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "less": "^4.1.3",
+    "typescript": "^4.9.4",
+    "vite": "^4.0.4",
+    "vite-plugin-monkey": "^2.11.0"
+  }
+}

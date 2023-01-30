@@ -1,0 +1,61 @@
+.bilibili-redirect-base {
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  input {
+    padding: 4px;
+    margin-left: 8px;
+    margin-right: 8px;
+    border: none;
+    border-bottom: 1px solid #000000B2;
+  }
+
+  .--br-clickable {
+    background-color: transparent;
+    transition: background-color 200ms ease;
+    clip-path: circle(50%);
+    padding: 4px;
+    margin: 1px;
+
+    &:hover {
+      background-color: #00000025;
+    }
+
+    &:active {
+      background-color: #00000035;
+    }
+  }
+
+  .--br-hidden {
+    display: none;
+  }
+
+  .--br-spacing-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .--br-popup-window {
+    width: 400px;
+    height: 100px;
+    z-index: 100000;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 16px 0 #00000060;
+    padding: 10px;
+  }
+
+  .--br-input-container {
+    flex: 1;
+    justify-content: center;
+  }
+}

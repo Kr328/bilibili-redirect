@@ -1,6 +1,6 @@
 # Bilibili Redirect
 
-重定向 [Bilibili](https://www.bilibili.com) 的视频播放到本地文件。
+重定向 [Bilibili](https://www.bilibili.com) 的视频播放到**本地文件**。
 
 ### 用法
 
@@ -14,5 +14,14 @@
 
 ### 构建
 
-1. 安装依赖 `typescript`
-2. 执行命令 `tsc`
+1. 安装依赖
+   ```bash
+   npm install
+   ```
+   
+2. 构建 
+   ```bash
+   npm run build
+   ```
+   
+3. 获取文件 `dist/bilibili-redirect.user.js`
