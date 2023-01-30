@@ -1,6 +1,6 @@
 import './style.less'
 import closeSvg from './close.svg'
-import {unsafeWindow} from "$";
+import {unsafeWindow} from "vite-plugin-monkey/dist/client";
 
 (() => {
     const injectHtml = `
