@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [
     monkey({
       entry: 'src/main.ts',
+      build: {
+        metaFileName: true,
+      },
       userscript: {
         namespace: "http://github.com/Kr328/bilibili-redirect",
         version: "1.4",
@@ -13,7 +16,7 @@ export default defineConfig({
         description: "Redirect bilibili video src to local file",
         author: "Kr328",
         icon: 'https://www.bilibili.com/favicon.ico',
-        updateURL: "https://github.com/Kr328/bilibili-redirect/releases/latest/download/bilibili-redirect.user.js",
+        updateURL: "https://github.com/Kr328/bilibili-redirect/releases/latest/download/bilibili-redirect.meta.js",
         downloadURL: "https://github.com/Kr328/bilibili-redirect/releases/latest/download/bilibili-redirect.user.js",
         match: [
             '*://www.bilibili.com/video/*',
