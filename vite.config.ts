@@ -11,7 +11,7 @@ export default defineConfig({
       },
       userscript: {
         namespace: "http://github.com/Kr328/bilibili-redirect",
-        version: "1.4",
+        version: "1.5",
         name: "Bilibili Redirect",
         description: "Redirect bilibili video src to local file",
         author: "Kr328",
