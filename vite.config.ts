@@ -18,6 +18,7 @@ export default defineConfig({
         name: "Bilibili Redirect",
         description: "允许使用 Bilibili 的播放器播放本地视频。",
         author: "Kr328",
+        license: "GPLv3",
         icon: 'https://www.bilibili.com/favicon.ico',
         updateURL: "https://github.com/Kr328/bilibili-redirect/releases/latest/download/bilibili-redirect.meta.js",
         downloadURL: "https://github.com/Kr328/bilibili-redirect/releases/latest/download/bilibili-redirect.user.js",
