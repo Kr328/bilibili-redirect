@@ -65,13 +65,26 @@ import {unsafeWindow} from "vite-plugin-monkey/dist/client";
                         if (video) {
                             const player = unsafeWindow.player;
 
+                            let core;
+                            if (player.core) {
+                                core = player.core()
+                            } else if (player.__core) {
+                                core = player.__core();
+                            } else {
+                                alert("UNSUPPORTED PLAYER");
+
+                                root.classList.add("--br-hidden");
+                                
+                                return;
+                            }
+
                             if (!this.destroyed) {
                                 this.destroyed = true;
 
-                                player.core().destroy();
+                                core.destroy();
                             }
 
-                            player.core().seek = async (t: number) => {
+                            core.seek = async (t: number) => {
                                 try {
                                     video.currentTime = t;
                                 } catch (e) {
