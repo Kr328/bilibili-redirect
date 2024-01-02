@@ -16,12 +16,12 @@
 
 1. 安装依赖
    ```bash
-   yarn install
+   pnpm install
    ```
    
 2. 构建 
    ```bash
-   yarn run build
+   pnpm build
    ```
    
 3. 获取文件 `dist/bilibili-redirect.user.js`
