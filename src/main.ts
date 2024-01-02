@@ -1,6 +1,6 @@
 import './style.less';
 import closeSvg from './close.svg';
-import {unsafeWindow} from "vite-plugin-monkey/dist/client";
+import { unsafeWindow } from "vite-plugin-monkey/dist/client";
 
 (() => {
     const injectHtml = `
@@ -36,7 +36,7 @@ import {unsafeWindow} from "vite-plugin-monkey/dist/client";
                 this.injected = true;
 
                 this.injectPopupWindow();
-                this.resizeLegacyPanel();
+                this.resizePanel();
             }
 
             return added;
@@ -74,7 +74,7 @@ import {unsafeWindow} from "vite-plugin-monkey/dist/client";
                                 alert("UNSUPPORTED PLAYER");
 
                                 root.classList.add("--br-hidden");
-                                
+
                                 return;
                             }
 
@@ -101,21 +101,31 @@ import {unsafeWindow} from "vite-plugin-monkey/dist/client";
             });
         }
 
-        private resizeLegacyPanel() {
-            const controlBox = document.querySelector<HTMLDivElement>(".bpx-player-ctrl-setting-box");
-            if (controlBox == null) {
+        private resizePanel() {
+            const panels = document.querySelectorAll<HTMLDivElement>(".bui-panel-wrap");
+            if (panels == null) {
                 return;
             }
 
-            const panel = controlBox.querySelector<HTMLDivElement>(".bui-panel-wrap");
-            if (panel == null) {
-                return;
-            }
+            for (let i = 0; i < panels.length ; i++) {
+                const panel = panels.item(i);
+                console.log(panel);
 
-            panel.style.height = "170px";
-            panel.querySelectorAll<HTMLDivElement>("div.bui-panel-item").forEach((elm) => {
-                elm.style.height = "100%";
-            });
+                const button = panel.querySelector("#bilibili-redirect-button");
+                if (!button) {
+                    continue;
+                }
+
+                const height = panel.style.height;
+                if (!height || height == "") {
+                    continue;
+                }
+
+                panel.style.height = (parseInt(height) + (button as HTMLElement).offsetHeight + 30).toString() + "px";
+                panel.querySelectorAll<HTMLDivElement>("div.bui-panel-item").forEach((elm) => {
+                    elm.style.height = "100%";
+                });
+            }
         }
 
         private addOption(containerSelector: string, cloneSelector: string): boolean {
@@ -134,6 +144,7 @@ import {unsafeWindow} from "vite-plugin-monkey/dist/client";
             const cloned: HTMLDivElement = clone.cloneNode(true) as HTMLDivElement;
 
             cloned.querySelector<HTMLSpanElement>("span")!.innerText = "使用本地源";
+            cloned.id = "bilibili-redirect-button";
             cloned.onclick = () => {
                 document.querySelector<HTMLDivElement>("#bilibili-redirect-root")!
                     .classList.remove("--br-hidden");
